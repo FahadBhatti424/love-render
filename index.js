@@ -1,5 +1,6 @@
 const express = require("express");
 const puppeteer = require('puppeteer');
+require("dotenv").config();
 
 const app = express();
 app.use(express.json()); // Parse JSON body
@@ -15,7 +16,16 @@ app.post("/genlove", async (req, res) => {
 
     let browser;
     try {
-        browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
+        browser = await puppeteer.launch({ 
+            executablePath: puppeteer.executablePath(), 
+            headless: true, 
+            args: [
+            "--disable-setuid-sandbox",
+            "--no-sandbox",
+            "--single-process",
+            "--no-zygote",
+        ],
+        });
         const page = await browser.newPage();
     // 1. Login
         await page.goto('https://lovable.dev/login', { waitUntil: 'domcontentloaded' });
